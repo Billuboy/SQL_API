@@ -103,6 +103,25 @@ router.put('/:id', isAuth, isAdmin, async (req: Request, res: Response) => {
     );
   });
 
+  if (response[0].movie_name !== req.body.movie_name) {
+    const movie = await new Promise((resolve, reject) => {
+      db.query(
+        'SELECT movie_id from `movies` WHERE movie_name = ?',
+        [<string>req.params.movie_name],
+        function (err, result) {
+          if (err) reject('Something went wrong');
+          resolve(result);
+        }
+      );
+    });
+
+    const movie_exist = JSON.parse(JSON.stringify(movie));
+    if (movie_exist.length > 0)
+      return res
+        .status(400)
+        .json({ movie: 'Movie with given name already exists' });
+  }
+
   if (response.length === 0)
     return res.status(404).json({ movie: 'No movie with given id exists' });
   else {
