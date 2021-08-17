@@ -1,0 +1,50 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URI")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String   @db.VarChar(50)
+  password String   @db.VarChar(90)
+  profile  Profile?
+
+  @@map("users")
+}
+
+model Profile {
+  id      Int      @id @default(autoincrement())
+  dob     DateTime @db.Date
+  user    User     @relation(fields: [userId], references: [id])
+  userId  Int      @unique
+  isAdmin Boolean? @default(false)
+  rentals Rental[]
+
+  @@map("profiles")
+}
+
+model Rental {
+  id        Int      @id @default(autoincrement())
+  rentalAt  DateTime @default(now())
+  movie     Movie    @relation(fields: [movieId], references: [id])
+  movieId   Int      @unique
+  profile   Profile  @relation(fields: [profileId], references: [id])
+  profileId Int
+
+  @@map("rentals")
+}
+
+model Movie {
+  id         Int      @id @default(autoincrement())
+  movieName  String   @db.VarChar(60)
+  rentPerDay Decimal  @db.Decimal(4, 2)
+  rentalLeft Int
+  stars      Decimal? @db.Decimal(2, 1)
+  rental     Rental?
+
+  @@map("movies")
+}
