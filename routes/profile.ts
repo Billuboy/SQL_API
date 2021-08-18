@@ -136,8 +136,8 @@ router.delete('/', isAuth, async (req: Request, res: Response) => {
   }
 });
 
-// @route   GET api/profile/rental
-// @desc    Get all Rentals
+// @route   GET api/profile/rental/:id
+// @desc    Get info about a particular rental
 // @access  Private(User)
 router.get('/rental/:id', isAuth, async (req, res) => {
   const { id } = <user>req.user;
